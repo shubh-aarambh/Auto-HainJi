@@ -13,17 +13,18 @@ export default function LogsPage() {
   }, [connectWebSocket, disconnectWebSocket]);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="flex flex-col h-full max-w-5xl mx-auto space-y-6">
       <div>
-        <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-lg">
           Winston Logs Terminal
         </h2>
-        <p className="text-zinc-500 mt-1">Full terminal output logs streamed live from the agent backend process.</p>
+        <p className="text-zinc-400 mt-1">Full terminal output logs streamed live from the agent backend process.</p>
       </div>
 
-      <div className="shadow-2xl">
-        <TerminalLogs logs={logs} onClear={clearLogs} />
+      <div className="flex-1 flex flex-col min-h-0">
+        <TerminalLogs logs={logs} onClear={clearLogs} className="flex-1 min-h-0 border border-zinc-800 max-h-[calc(100vh-250px)]" />
       </div>
     </div>
   );
 }
+

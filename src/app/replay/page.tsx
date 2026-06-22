@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { GlassCard } from '@/components/ui/GlassCard';
-import { GlowingCard } from '@/components/ui/GlowingCard';
-import { CheckCircle2, XCircle, Calendar, ArrowRight, RefreshCw } from 'lucide-react';
+import { CheckCircle2, XCircle, RefreshCw, Play, Info } from 'lucide-react';
 
 interface Step {
   id: string;
@@ -64,187 +62,164 @@ export default function ReplayPage() {
     }
   };
 
-  const getStatusClass = (status: string) => {
-    switch (status.toUpperCase()) {
-      case 'COMPLETED':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      case 'FAILED':
-        return 'bg-red-500/10 text-red-400 border-red-500/20';
-      default:
-        return 'bg-violet-500/10 text-violet-400 border-violet-500/20';
-    }
-  };
-
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col h-full max-w-full mx-auto space-y-4">
+      {/* Header */}
+      <div className="flex justify-between items-center shrink-0 px-2">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500 bg-clip-text text-transparent">
-            Replay History
+          <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-lg">
+            Replay Studio
           </h2>
-          <p className="text-zinc-500 mt-1">Review past execution runs, step-by-step screenshots, and metrics.</p>
+          <p className="text-zinc-400 mt-1">Timeline-based execution analysis and telemetry.</p>
         </div>
 
         <button 
           onClick={fetchHistory}
-          className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-900 transition"
+          className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-300 transition"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-        <div className="md:col-span-4 space-y-4 max-h-[70vh] overflow-y-auto pr-2">
-          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block mb-2">Previous Runs</span>
-          {sessions.length === 0 ? (
-            <div className="text-center py-10 border border-zinc-900 rounded-2xl text-zinc-650 text-sm">
-              No sessions found in database.
+      {/* Top Half: Viewer and Details */}
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 gap-4">
+        
+        {/* Left: Video Player */}
+        <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-xl">
+          <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-3 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-3">
+              <Play className="w-4 h-4 text-zinc-400" />
+              <span className="text-xs font-bold uppercase tracking-widest text-zinc-300">Playback Monitor</span>
             </div>
+            {selectedStep && selectedSession && (
+              <span className="text-[10px] bg-zinc-800 px-2 py-1 rounded text-zinc-300 font-mono tracking-widest uppercase">
+                Frame {selectedSession.steps.indexOf(selectedStep) + 1} / {selectedSession.steps.length}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 relative bg-[#050505] flex items-center justify-center">
+            {selectedStep?.screenshot ? (
+              <img
+                src={selectedStep.screenshot}
+                alt={`Screenshot for step ${selectedStep.action}`}
+                className="absolute inset-0 w-full h-full object-contain"
+              />
+            ) : (
+              <p className="text-zinc-600 text-xs font-medium uppercase tracking-widest">No visual data for frame</p>
+            )}
+          </div>
+        </div>
+
+        {/* Right: Telemetry Details */}
+        <div className="w-full md:w-80 bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-xl shrink-0">
+          <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-3 shrink-0 flex items-center gap-3">
+            <Info className="w-4 h-4 text-zinc-400" />
+            <span className="text-xs font-bold uppercase tracking-widest text-zinc-300">Frame Telemetry</span>
+          </div>
+          <div className="p-5 space-y-6 flex-1 overflow-y-auto scrollbar-thin">
+            {selectedSession ? (
+              <>
+                <div>
+                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Active Sequence</span>
+                  <p className="text-sm text-zinc-200 font-medium">{selectedSession.goal}</p>
+                </div>
+                
+                {selectedStep && (
+                  <div className="space-y-3">
+                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Node Data</span>
+                    <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 space-y-3">
+                      <div>
+                        <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Action</span>
+                        <p className="font-mono text-zinc-200 text-xs mt-1 font-bold">{selectedStep.action}</p>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Status</span>
+                        <p className={`text-xs font-bold uppercase tracking-widest mt-1 ${selectedStep.status === 'SUCCESS' ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {selectedStep.status}
+                        </p>
+                      </div>
+                      <div className="flex justify-between">
+                        <div>
+                          <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Duration</span>
+                          <p className="font-mono text-zinc-300 text-xs mt-1">{selectedStep.duration}ms</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-zinc-500 uppercase font-semibold tracking-wider">Retries</span>
+                          <p className="font-mono text-zinc-300 text-xs mt-1">{selectedStep.retries}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-zinc-600 text-xs text-center mt-10">Select a sequence to view telemetry.</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Half: Timeline Editor */}
+      <div className="h-64 shrink-0 bg-zinc-950 border border-zinc-800 rounded-3xl flex flex-col overflow-hidden shadow-xl">
+        <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-2 shrink-0 flex justify-between items-center">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Sequences (Runs)</span>
+        </div>
+        
+        {/* Sessions Track */}
+        <div className="flex-1 border-b border-zinc-800 overflow-x-auto flex items-center px-4 gap-3 scrollbar-thin">
+          {sessions.length === 0 ? (
+            <p className="text-zinc-600 text-xs">No sequences recorded.</p>
           ) : (
-            sessions.map((sess) => {
+            sessions.map(sess => {
               const isSelected = selectedSession?.id === sess.id;
-              const date = new Date(sess.startedAt).toLocaleDateString();
-              const time = new Date(sess.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
               return (
-                <div
+                <div 
                   key={sess.id}
                   onClick={() => handleSelectSession(sess)}
-                  className={`cursor-pointer rounded-xl border p-4 transition-all hover:bg-zinc-900/40 ${isSelected ? 'bg-zinc-900/60 border-zinc-750 shadow-lg' : 'bg-zinc-950/20 border-zinc-900'}`}
+                  className={`shrink-0 w-64 h-20 rounded-xl border p-3 cursor-pointer transition-all flex flex-col justify-between ${isSelected ? 'bg-zinc-800 border-zinc-600 shadow-md' : 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800/80'}`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-xs font-semibold text-zinc-500 font-mono">
-                      #{sess.id.slice(0, 8)}
-                    </span>
-                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${getStatusClass(sess.status)}`}>
-                      {sess.status}
-                    </span>
+                  <div className="flex justify-between items-center">
+                    <span className="font-mono text-[10px] font-bold text-zinc-400">#{sess.id.slice(0, 6)}</span>
+                    <div className={`h-2 w-2 rounded-full ${sess.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-red-500'}`} />
                   </div>
-
-                  <p className="text-sm font-medium text-zinc-200 line-clamp-1 mb-3">
-                    {sess.goal}
-                  </p>
-
-                  <div className="flex items-center justify-between text-xs text-zinc-500">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5" /> {date} at {time}
-                    </span>
-                    <span>{sess.steps?.length || 0} steps</span>
-                  </div>
+                  <p className="text-xs text-zinc-200 font-medium truncate">{sess.goal}</p>
+                  <span className="text-[10px] text-zinc-500 font-medium">{sess.steps?.length || 0} nodes</span>
                 </div>
               );
             })
           )}
         </div>
 
-        {selectedSession ? (
-          <div className="md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <GlassCard className="space-y-6">
-              <div className="border-b border-zinc-900 pb-4">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block mb-1">
-                  Active Run Goal
-                </span>
-                <p className="text-sm font-medium text-zinc-300">
-                  {selectedSession.goal}
-                </p>
-              </div>
+        <div className="border-b border-zinc-800 bg-zinc-900/50 px-4 py-2 shrink-0 flex justify-between items-center">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Nodes (Timeline)</span>
+        </div>
 
-              <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider block mb-2">
-                  Execution steps
-                </span>
-
-                {selectedSession.steps?.length === 0 ? (
-                  <div className="text-center py-6 text-zinc-650 text-xs">
-                    No steps saved for this run.
+        {/* Steps Track */}
+        <div className="flex-1 overflow-x-auto flex items-center px-4 gap-2 scrollbar-thin bg-[#0a0a0a]">
+          {!selectedSession ? (
+            <p className="text-zinc-600 text-xs">Select a sequence to view nodes.</p>
+          ) : selectedSession.steps?.length === 0 ? (
+            <p className="text-zinc-600 text-xs">No nodes in this sequence.</p>
+          ) : (
+            selectedSession.steps.map((step, idx) => {
+              const isSelectedStep = selectedStep?.id === step.id;
+              return (
+                <div
+                  key={step.id}
+                  onClick={() => setSelectedStep(step)}
+                  className={`shrink-0 w-40 h-16 rounded-lg border p-2 cursor-pointer transition-all flex flex-col justify-between ${isSelectedStep ? 'bg-zinc-200 border-white text-zinc-900 shadow-lg' : 'bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-300'}`}
+                >
+                  <div className="flex justify-between items-center">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelectedStep ? 'text-zinc-500' : 'text-zinc-500'}`}>N-{idx + 1}</span>
+                    {step.status === 'SUCCESS' ? <CheckCircle2 className={`w-3 h-3 ${isSelectedStep ? 'text-emerald-600' : 'text-emerald-500'}`} /> : <XCircle className={`w-3 h-3 ${isSelectedStep ? 'text-red-600' : 'text-red-500'}`} />}
                   </div>
-                ) : (
-                  selectedSession.steps.map((step, idx) => {
-                    const isSelectedStep = selectedStep?.id === step.id;
-                    const durationSec = (step.duration / 1000).toFixed(1);
-                    return (
-                      <div
-                        key={step.id}
-                        onClick={() => setSelectedStep(step)}
-                        className={`cursor-pointer flex items-center justify-between rounded-xl border p-3 transition ${isSelectedStep ? 'bg-zinc-900/60 border-zinc-700' : 'bg-zinc-950/40 border-zinc-900 hover:bg-zinc-900/30'}`}
-                      >
-                        <div className="flex items-center gap-3">
-                          {step.status === 'SUCCESS' ? (
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                          ) : (
-                            <XCircle className="h-4 w-4 text-red-500 shrink-0" />
-                          )}
-                          <div className="text-xs">
-                            <p className="font-semibold text-zinc-200 uppercase tracking-wider">
-                              {step.action}
-                            </p>
-                            <p className="text-zinc-500">Duration: {durationSec}s</p>
-                          </div>
-                        </div>
-
-                        <ArrowRight className={`h-4 w-4 transition ${isSelectedStep ? 'translate-x-1 text-violet-500' : 'text-zinc-600'}`} />
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </GlassCard>
-
-            <GlowingCard className="space-y-4">
-              <div className="border-b border-zinc-905 pb-3 flex justify-between items-center">
-                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-                  Replay Screenshot Frame
-                </span>
-                {selectedStep && (
-                  <span className="text-[10px] font-mono text-zinc-500">
-                    Step {selectedSession.steps.indexOf(selectedStep) + 1}
-                  </span>
-                )}
-              </div>
-
-              <div className="rounded-xl border border-zinc-900 bg-zinc-950 overflow-hidden relative aspect-video w-full flex items-center justify-center min-h-[220px]">
-                {selectedStep?.screenshot ? (
-                  <img
-                    src={selectedStep.screenshot}
-                    alt={`Screenshot for step ${selectedStep.action}`}
-                    className="absolute inset-0 w-full h-full object-contain"
-                  />
-                ) : (
-                  <div className="text-center px-4">
-                    <p className="text-zinc-650 text-xs">
-                      No screenshot captured for this action step.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {selectedStep && (
-                <div className="space-y-2 text-xs border-t border-zinc-905 pt-3">
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500 uppercase font-semibold">Action:</span>
-                    <span className="font-mono text-zinc-300 uppercase">{selectedStep.action}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500 uppercase font-semibold">Execution Status:</span>
-                    <span className={`font-semibold ${selectedStep.status === 'SUCCESS' ? 'text-emerald-400' : 'text-red-400'}`}>{selectedStep.status}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500 uppercase font-semibold">Duration:</span>
-                    <span className="text-zinc-300 font-mono">{selectedStep.duration} ms</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500 uppercase font-semibold">Retry count:</span>
-                    <span className="text-zinc-300 font-mono">{selectedStep.retries}</span>
-                  </div>
+                  <p className={`text-[10px] font-bold uppercase truncate ${isSelectedStep ? 'text-black' : 'text-zinc-200'}`}>{step.action}</p>
                 </div>
-              )}
-            </GlowingCard>
-          </div>
-        ) : (
-          <div className="md:col-span-8 flex items-center justify-center border border-zinc-900 rounded-2xl h-[400px] text-zinc-600">
-            <span>Select a historical session to replay.</span>
-          </div>
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );

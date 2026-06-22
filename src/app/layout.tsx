@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/ui/Sidebar";
 import { CommandMenu } from "@/components/ui/CommandMenu";
 
-const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AutoPilot AI – Website Automation Agent",
+  title: "Auto-HainJi – Website Automation Agent",
   description: "Advanced browser automation agent driven by visual and selector rankers.",
 };
 
@@ -17,17 +17,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark bg-[#09090B]" suppressHydrationWarning>
-      <body className={`${inter.className} flex min-h-screen text-zinc-100 overflow-hidden`} suppressHydrationWarning>
-        <Sidebar />
-        <main className="flex-1 flex flex-col h-screen overflow-y-auto bg-[#09090B] relative">
-          <div className="absolute top-0 right-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-violet-600/10 blur-[120px]" />
-          <div className="absolute bottom-0 left-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-fuchsia-600/5 blur-[100px]" />
+    <html lang="en" className="dark bg-[#0a0a0a]" suppressHydrationWarning>
+      <body className={`${outfit.className} flex flex-col min-h-screen text-zinc-100 overflow-hidden bg-[#0a0a0a] relative`} suppressHydrationWarning>
+        <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-0 pb-28">
+          {/* Subtle noise/grid could go here, but keeping it clean and minimal for eye comfort */}
           
-          <div className="p-8 flex-1">
+          <div className="p-8 flex-1 flex flex-col min-h-0 overflow-hidden">
             {children}
           </div>
         </main>
+        
+        {/* Floating Bottom Dock Container */}
+        <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto">
+            <Sidebar />
+          </div>
+        </div>
+
         <CommandMenu />
       </body>
     </html>

@@ -9,8 +9,8 @@ let wss: WebSocketServer | null = null;
 export function initWebSocketServer() {
   if (wss) return wss;
 
-  logger.info('Initializing WebSocket Server on port 3001...');
-  wss = new WebSocketServer({ port: 3001 });
+  logger.info('Initializing WebSocket Server on port 4001...');
+  wss = new WebSocketServer({ port: 4001 });
 
   const clients = new Set<WebSocket>();
 
@@ -55,6 +55,6 @@ export function initWebSocketServer() {
   eventBus.on(AgentEvent.SESSION_CREATED, (data) => broadcast('session_created', data));
   eventBus.on(AgentEvent.SESSION_FINISHED, (data) => broadcast('session_finished', data));
 
-  logger.success('WebSocket Server running on ws://localhost:3001');
+  logger.success('WebSocket Server running on ws://localhost:4001');
   return wss;
 }

@@ -13,6 +13,7 @@ import { ExponentialBackoffRetryPolicy } from '../retry/RetryPolicy';
 import { Planner } from '../planner/Planner';
 import { OpenAIPlanner } from '../planner/OpenAIPlanner';
 import { GeminiPlanner } from '../planner/GeminiPlanner';
+import { GroqPlanner } from '../planner/GroqPlanner';
 
 export class ExecutionEngine {
   private toolRegistry = new ToolRegistry();
@@ -20,7 +21,9 @@ export class ExecutionEngine {
   private planner: Planner;
 
   constructor() {
-    if (process.env.GEMINI_API_KEY) {
+    if (process.env.GROQ_API_KEY) {
+      this.planner = new GroqPlanner();
+    } else if (process.env.GEMINI_API_KEY) {
       this.planner = new GeminiPlanner();
     } else {
       this.planner = new OpenAIPlanner();

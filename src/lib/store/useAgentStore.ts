@@ -109,7 +109,7 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
   connectWebSocket: () => {
     if (get().socket) return;
 
-    const ws = new WebSocket('ws://localhost:3001');
+    const ws = new WebSocket('ws://localhost:4001');
 
     ws.onopen = () => {
       console.log('Connected to AutoPilot agent WebSocket gateway.');

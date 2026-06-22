@@ -29,7 +29,7 @@ export class AgentController {
     const dbSession = await SessionManager.createSession(goal);
     this.currentSessionId = dbSession.id;
 
-    this.memoryManager = new AgentMemoryManager(this.currentSessionId);
+    this.memoryManager = new AgentMemoryManager(dbSession.id);
     this.memoryManager.updateUrl(url);
     this.memoryManager.updateState(AgentState.STARTING);
 
@@ -51,7 +51,7 @@ export class AgentController {
     };
 
     const compileActionQueue = (goalText: string, targetUrl: string) => {
-      const queue = [
+      const queue: any[] = [
         { action: 'open_browser', args: { headless: false } },
         { action: 'navigate_to_url', args: { url: targetUrl } }
       ];
@@ -93,7 +93,7 @@ export class AgentController {
       logger.error('Unhandled agent loop error', err);
     });
 
-    return this.currentSessionId;
+    return dbSession.id;
   }
 
   private async runAgentLoop() {
