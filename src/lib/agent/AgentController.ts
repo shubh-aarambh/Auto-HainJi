@@ -69,7 +69,7 @@ export class AgentController {
         return queue;
       }
 
-      // 2. Form Goal: "fill Name: Shubham..."
+      // 2. Form Goal: "fill Name: shubh..."
       if (goalLower.includes('fill') || goalLower.includes('form') || goalLower.includes('name') || goalLower.includes('description') || goalLower.includes('input') || goalLower.includes('login')) {
         const nameText = parseGoalValue(goalText, 'name', 'Auto-HainJi Agent');
         const descText = parseGoalValue(goalText, 'description', 'Auto-HainJi AI website automation agent completes this task seamlessly.');
