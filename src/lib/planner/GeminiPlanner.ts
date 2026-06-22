@@ -29,7 +29,7 @@ export class GeminiPlanner implements Planner {
       cssSelector: el.cssSelector
     }));
 
-    const systemInstruction = `You are the AI Planner layer of AutoPilot AI browser automation agent.
+    const systemInstruction = `You are the AI Planner layer of Auto-HainJi AI browser automation agent.
 Your objective is to help the agent recover when the deterministic action queue fails or elements cannot be found.
 
 Given:

@@ -112,7 +112,7 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     const ws = new WebSocket('ws://localhost:4001');
 
     ws.onopen = () => {
-      console.log('Connected to AutoPilot agent WebSocket gateway.');
+      console.log('Connected to Auto-HainJi agent WebSocket gateway.');
     };
 
     ws.onmessage = (event) => {

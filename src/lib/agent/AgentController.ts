@@ -69,10 +69,10 @@ export class AgentController {
         return queue;
       }
 
-      // 2. Form Goal: "fill Name: Aditya..."
+      // 2. Form Goal: "fill Name: Shubham..."
       if (goalLower.includes('fill') || goalLower.includes('form') || goalLower.includes('name') || goalLower.includes('description') || goalLower.includes('input') || goalLower.includes('login')) {
-        const nameText = parseGoalValue(goalText, 'name', 'AutoPilot Agent');
-        const descText = parseGoalValue(goalText, 'description', 'AutoPilot AI website automation agent completes this task seamlessly.');
+        const nameText = parseGoalValue(goalText, 'name', 'Auto-HainJi Agent');
+        const descText = parseGoalValue(goalText, 'description', 'Auto-HainJi AI website automation agent completes this task seamlessly.');
         queue.push(
           { action: 'send_keys', args: { targetLabel: 'name', text: nameText } },
           { action: 'send_keys', args: { targetLabel: 'description', text: descText } },
