@@ -1,0 +1,29 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  goal      String
+  status    String    // IDLE, STARTING, BROWSER_OPEN, COMPLETED, FAILED, etc.
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  steps     Step[]
+}
+
+model Step {
+  id          String   @id @default(uuid())
+  sessionId   String
+  action      String
+  status      String   // SUCCESS, FAILED, RETRYING
+  screenshot  String?  // File path/URL of the captured state
+  duration    Int      // Milliseconds
+  retries     Int      @default(0)
+  timestamp   DateTime @default(now())
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
